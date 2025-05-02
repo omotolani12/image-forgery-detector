@@ -5,6 +5,38 @@ from fastapi import FastAPI, File, UploadFile
 from app.utils.preprocess import preprocess_image
 import uvicorn
 
+import os
+import requests
+
+MODEL_URL = "https://drive.google.com/uc?export=download&id=1MAcs6opFJJiUhqXOiao7g3GzUi-O48ju"
+MODEL_PATH = "app/model/quantum_forgery_detector.h5"
+
+def download_model():
+    if os.path.exists(MODEL_PATH):
+        return  # Already downloaded
+
+    os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
+    print("Downloading model from Google Drive...")
+
+    # Handle large file download from Google Drive
+    session = requests.Session()
+    response = session.get(MODEL_URL, stream=True)
+    
+    # Check for confirmation token
+    for key, value in response.cookies.items():
+        if key.startswith("download_warning"):
+            MODEL_URL_confirm = MODEL_URL + "&confirm=" + value
+            response = session.get(MODEL_URL_confirm, stream=True)
+            break
+
+    with open(MODEL_PATH, "wb") as f:
+        for chunk in response.iter_content(32768):
+            if chunk:
+                f.write(chunk)
+
+    print("Model downloaded.")
+
+
 # Quantum setup
 n_qubits = 16
 dev = qml.device("default.qubit", wires=n_qubits)
