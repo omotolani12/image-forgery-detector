@@ -5,3 +5,4 @@ pennylane
 numpy
 opencv-python
 pillow
+gdown
