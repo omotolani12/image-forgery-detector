@@ -8,9 +8,6 @@ import os
 import requests
 import subprocess
 
-import os
-import subprocess
-
 MODEL_PATH = "app/model/quantum_forgery_detector.h5"
 
 def download_model():
