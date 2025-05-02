@@ -6,35 +6,27 @@ from app.utils.preprocess import preprocess_image
 import uvicorn
 import os
 import requests
+import subprocess
 
-# Google Drive direct download link
-MODEL_URL = "https://drive.google.com/uc?export=download&id=1MAcs6opFJJiUhqXOiao7g3GzUi-O48ju"
+import os
+import subprocess
+
 MODEL_PATH = "app/model/quantum_forgery_detector.h5"
 
 def download_model():
     if os.path.exists(MODEL_PATH):
-        return  # Already exists
+        print("Model already exists.")
+        return
 
     os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
-    print("Downloading model from Google Drive...")
+    print("Downloading model using gdown...")
 
-    # Handle large file download from Google Drive
-    session = requests.Session()
-    response = session.get(MODEL_URL, stream=True)
-
-    # Check for confirmation token
-    for key, value in response.cookies.items():
-        if key.startswith("download_warning"):
-            MODEL_URL_confirm = MODEL_URL + "&confirm=" + value
-            response = session.get(MODEL_URL_confirm, stream=True)
-            break
-
-    with open(MODEL_PATH, "wb") as f:
-        for chunk in response.iter_content(32768):
-            if chunk:
-                f.write(chunk)
+    file_id = "1MAcs6opFJJiUhqXOiao7g3GzUi-O48ju"
+    command = f"gdown --id {file_id} -O {MODEL_PATH}"
+    subprocess.run(command, shell=True, check=True)
 
     print("Model downloaded.")
+
 
 # Run model download
 download_model()
