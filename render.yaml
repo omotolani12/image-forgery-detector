@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: image-forgery-backend
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port 10000"
+    plan: free
+    envVars:
+      - key: PORT
+        value: 10000
+
+staticSites:
+  - name: image-forgery-frontend
+    buildCommand: ""
+    staticPublishPath: frontend
+    plan: free
